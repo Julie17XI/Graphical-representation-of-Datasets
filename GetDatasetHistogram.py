@@ -18,6 +18,17 @@ def getAges(dataset_folder):
     ages = sorted(ages.items(), key = lambda item : item[0])
     return dict(ages)
 
+def getOneFamilyAges(dataset_collection_folder):
+    all_ages = defaultdict(lambda: 0)
+    for subdir_name in os.listdir(dataset_collection_folder):
+        subdir_path = os.path.join(dataset_collection_folder, subdir_name)
+        res = getAges(subdir_path)
+        print(f"nums: {sum(res.values())}")
+        for item in res.items():
+            all_ages[item[0]] += item[1]
+    print(f"all_ages: {all_ages}")
+    return all_ages
+
 def getTotalNumOfImages(dict):
     return sum(dict.values())
 
@@ -75,18 +86,28 @@ def getNumOfPeopleByRaceAndAge(csv_file):
     plt.title('UTKFace Data Distribution')
     plt.show()
 
+def cleanOneFamilyData(dataset_collection_folder):
+    for subdir_name in os.listdir(dataset_collection_folder):
+        subdir_path = os.path.join(dataset_collection_folder, subdir_name)
+        for file_name in os.listdir(subdir_path):
+            file_path = os.path.join(subdir_path, file_name)
+            if int(file_name.split('_')[0]) < 0:
+                os.remove(file_path)
+    return
 #
 # Start of main
 #
 
 # Get graphical representations for custom datasets
-
-# dataset_folder = "./StevenOHara"
-# ages = getAges(dataset_folder)
-# total_num_images = getTotalNumOfImages(ages)
-# bins = makeEmptyBins()
-# populate_bins = populateBins(ages, bins)
-# plotHistogram('OneIndividual', populate_bins, total_num_images)
+cleanOneFamilyData('./persons')
+#dataset_folder = "./StevenOHara"
+ages = getOneFamilyAges('./persons')
+#ages = getAges(dataset_folder)
+total_num_images = getTotalNumOfImages(ages)
+bins = makeEmptyBins()
+populate_bins = populateBins(ages, bins)
+#plotHistogram('OneIndividual', populate_bins, total_num_images)
+plotHistogram('OneFamily', populate_bins, total_num_images)
 
 
 # Get graphical representations for benchmark datasets
